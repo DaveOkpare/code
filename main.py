@@ -26,7 +26,7 @@ COMMANDS = {
     "/model": "Switch AI models",
     "/help": "Show available commands",
     "/quit": "Exit the application",
-    "/exit": "Exit the application"
+    "/exit": "Exit the application",
 }
 
 # Available models for autocomplete and /model command
@@ -58,18 +58,20 @@ class CustomAutoSuggest(AutoSuggestFromHistory):
         text = document.text_before_cursor.strip()
         for special in self.special_suggestions:
             if special.startswith(text) and len(text) > 0:
-                return Suggestion(special[len(text):])
+                return Suggestion(special[len(text) :])
 
         return suggestion
 
 
 # Custom style for the prompt input (matching Rich's cyan/purple vibe)
-style = PStyle.from_dict({
-    'completion-menu.completion': 'bg:#008888 #ffffff',
-    'completion-menu.completion.current': 'bg:#00aaaa #000000',
-    'scrollbar.background': 'bg:#88aaaa',
-    'scrollbar.button': 'bg:#222222',
-})
+style = PStyle.from_dict(
+    {
+        "completion-menu.completion": "bg:#008888 #ffffff",
+        "completion-menu.completion.current": "bg:#00aaaa #000000",
+        "scrollbar.background": "bg:#88aaaa",
+        "scrollbar.button": "bg:#222222",
+    }
+)
 
 
 def create_parser(prog_name: str = "selfheal") -> argparse.ArgumentParser:
@@ -82,16 +84,16 @@ def create_parser(prog_name: str = "selfheal") -> argparse.ArgumentParser:
 
     # Optional positional for one-shot mode
     parser.add_argument(
-        'prompt',
-        nargs='?',
-        help='AI prompt for one-shot mode. If omitted, starts interactive mode.',
+        "prompt",
+        nargs="?",
+        help="AI prompt for one-shot mode. If omitted, starts interactive mode.",
     )
 
     # Model selection with autocomplete
     model_arg = parser.add_argument(
-        '-m',
-        '--model',
-        default='gpt-4',
+        "-m",
+        "--model",
+        default="gpt-4",
         help='Initial model to use. Defaults to "gpt-4".',
     )
     model_arg.completer = argcomplete.ChoicesCompleter(AVAILABLE_MODELS)  # type: ignore
@@ -178,7 +180,14 @@ def run_interactive(
                     continue
 
                 elif cmd == "/help":
-                    console.print(Panel("\n".join([f"[bold cyan]{k}[/]: {v}" for k,v in COMMANDS.items()]), title="Commands"))
+                    console.print(
+                        Panel(
+                            "\n".join(
+                                [f"[bold cyan]{k}[/]: {v}" for k, v in COMMANDS.items()]
+                            ),
+                            title="Commands",
+                        )
+                    )
                     continue
 
                 elif cmd == "/reset":
@@ -187,7 +196,9 @@ def run_interactive(
                     continue
 
                 elif cmd == "/model":
-                    current_model = handle_model_command(user_input, current_model, console)
+                    current_model = handle_model_command(
+                        user_input, current_model, console
+                    )
                     continue
 
                 else:
@@ -195,15 +206,24 @@ def run_interactive(
                     continue
 
             # Handle Normal Chat
-            if not user_input: continue
+            if not user_input:
+                continue
 
             # Simulate "thinking"
             console.print()
-            with console.status(f"[dim]Sending to {current_model}...[/]", spinner="dots"):
+            with console.status(
+                f"[dim]Sending to {current_model}...[/]", spinner="dots"
+            ):
                 time.sleep(1)
 
             # Response
-            console.print(Panel(Markdown(f"I processed: **{user_input}**"), title=f"[bold purple]{current_model}[/]", border_style="purple"))
+            console.print(
+                Panel(
+                    Markdown(f"I processed: **{user_input}**"),
+                    title=f"[bold purple]{current_model}[/]",
+                    border_style="purple",
+                )
+            )
             console.print()
 
         except KeyboardInterrupt:
