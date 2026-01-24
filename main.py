@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import sys
 import time
 from collections.abc import Sequence
@@ -13,8 +14,11 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.document import Document
 from prompt_toolkit.styles import Style as PStyle
 from rich.console import Console
+from rich.live import Live
 from rich.markdown import Markdown
 from rich.panel import Panel
+
+from agent import _agent
 
 # Setup Rich Console
 console = Console()
@@ -143,7 +147,7 @@ def handle_model_command(command: str, current_model: str, console: Console) -> 
         return current_model
 
 
-def run_interactive(
+async def run_interactive(
     model: str,
     console: Console,
 ) -> int:
@@ -164,7 +168,7 @@ def run_interactive(
     while True:
         try:
             # 2. Interactive Input Loop
-            user_input = session.prompt("You > ").strip()
+            user_input = (await session.prompt_async("You > ")).strip()
 
             # Handle Slash Commands
             if user_input.startswith("/"):
@@ -209,21 +213,29 @@ def run_interactive(
             if not user_input:
                 continue
 
-            # Simulate "thinking"
             console.print()
-            with console.status(
-                f"[dim]Sending to {current_model}...[/]", spinner="dots"
-            ):
-                time.sleep(1)
 
-            # Response
-            console.print(
-                Panel(
-                    Markdown(f"I processed: **{user_input}**"),
-                    title=f"[bold purple]{current_model}[/]",
-                    border_style="purple",
-                )
-            )
+            # Stream response with panel
+            content = ""
+            async with _agent.run_stream(user_input) as stream:
+                with Live(
+                    Panel(
+                        Markdown(content),
+                        title=f"[bold purple]{current_model}[/]",
+                        border_style="purple",
+                    ),
+                    refresh_per_second=15,
+                    console=console,
+                ) as live:
+                    async for text in stream.stream_text(delta=True):
+                        content += text
+                        live.update(
+                            Panel(
+                                Markdown(content),
+                                title=f"[bold purple]{current_model}[/]",
+                                border_style="purple",
+                            )
+                        )
             console.print()
 
         except KeyboardInterrupt:
@@ -270,7 +282,7 @@ def cli(args_list: Sequence[str] | None = None, *, prog_name: str = "selfheal") 
         return 0
 
     # Interactive mode
-    return run_interactive(args.model, console_instance)
+    return asyncio.run(run_interactive(args.model, console_instance))
 
 
 def cli_exit(prog_name: str = "selfheal") -> None:
