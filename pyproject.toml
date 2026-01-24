@@ -1,7 +1,22 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "code"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic-ai>=1.44.0",
+    "rich>=13",
+    "prompt-toolkit>=3",
+    "argcomplete>=3.5.0",
+]
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[project.scripts]
+selfheal = "main:cli_exit"
