@@ -67,8 +67,8 @@ def grep_search(pattern: str, filepath: str, flags: str = "-n"):
 
 def edit_file(find: str, replace: str, filepath: str):
     """Replace text in a file using sed."""
-    safe_find = find.replace("/", "\/")
-    safe_replace = replace.replace("/", "\/")
+    safe_find = find.replace("/", "\\/")
+    safe_replace = replace.replace("/", "\\/")
     safe_path = shlex.quote(filepath)
 
     cmd = f"sed -i 's/{safe_find}/{safe_replace}/g' {safe_path}"
