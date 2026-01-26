@@ -45,7 +45,7 @@ def _run_process_streaming(command, cwd=".", log=False):
         return f"EXECUTION ERROR: {str(e)}"
 
 
-def read_file(filepath: str):
+def read(filepath: str):
     """Reads a file"""
     try:
         with open(filepath, "r") as f:
@@ -56,7 +56,7 @@ def read_file(filepath: str):
         return str(e)
 
 
-def grep_search(pattern: str, filepath: str, flags: str = "-n"):
+def search(pattern: str, filepath: str, flags: str = "-n"):
     """Searches for a pattern in a file.
     Flags: -n (line numbers), -i (ignore case), -r (recursive)
     """
@@ -66,7 +66,7 @@ def grep_search(pattern: str, filepath: str, flags: str = "-n"):
     return _run_process_streaming(cmd)
 
 
-def edit_file(find: str, replace: str, filepath: str):
+def edit(find: str, replace: str, filepath: str):
     """Replace text in a file using sed."""
     safe_find = find.replace("/", "\\/")
     safe_replace = replace.replace("/", "\\/")

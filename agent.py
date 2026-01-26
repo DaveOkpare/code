@@ -2,14 +2,14 @@ import asyncio
 
 from pydantic_ai import Agent
 
-from tools import edit_file, execute, grep_search, read_file, write
+from tools import edit, execute, read, search, write
 
 _agent = Agent(
     model="openai:gpt-5-mini",
     tools=[
-        read_file,
-        grep_search,
-        edit_file,
+        read,
+        search,
+        edit,
         write,
         execute,
     ],
