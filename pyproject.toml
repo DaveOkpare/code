@@ -13,6 +13,7 @@ dependencies = [
     "rich>=13",
     "prompt-toolkit>=3",
     "argcomplete>=3.5.0",
+    "pydantic-ai-todo>=0.1.5",
 ]
 
 [tool.setuptools]
