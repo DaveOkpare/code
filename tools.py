@@ -2,7 +2,7 @@ import shlex
 import subprocess
 
 
-def _run_process_streaming(command, cwd="."):
+def _run_process_streaming(command, cwd=".", log=False):
     """
     Runs a command and streams output in real-time to the console,
     while capturing it to return to the LLM.
@@ -26,7 +26,8 @@ def _run_process_streaming(command, cwd="."):
             if output == "" and process.poll() is not None:
                 break
             if output:
-                print(f"[Stream]: {output.strip()}")  # Show user immediately
+                if log:
+                    print(f"[Stream]: {output.strip()}")  # Show user immediately
                 captured_stdout.append(output)
 
         # Get any remaining stderr
