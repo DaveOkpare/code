@@ -3,7 +3,7 @@ import asyncio
 from pydantic_ai import Agent
 from pydantic_ai_todo import TodoStorage, create_todo_toolset
 
-from tools import edit, execute, read, search, write
+from tools import edit, execute, glob_files, read, search, write
 
 storage = TodoStorage()
 
@@ -15,6 +15,7 @@ _agent = Agent(
         edit,
         write,
         execute,
+        glob_files,
     ],
     toolsets=[create_todo_toolset(storage=storage)],
 )

@@ -1,3 +1,4 @@
+import glob
 import shlex
 import subprocess
 
@@ -89,3 +90,22 @@ def write(content: str, filepath: str):
 def execute(command: str):
     """Executes a raw bash command."""
     return _run_process_streaming(command)
+
+
+def glob_files(pattern: str, recursive: bool = False):
+    """Searches for files matching a pattern.
+
+    Use this to list files in the workspace. Other options:
+        - Set recursive=True to search subdirectories using '**'
+        - Hidden files are excluded by default for security/brevity.
+    """
+    safe_pattern = shlex.quote(pattern)
+    files = glob.iglob(safe_pattern, recursive=recursive, include_hidden=False)
+    ignored_dirs = {".git", ".venv", "node_modules", "__pycache__"}
+
+    results = []
+    for f in files:
+        if not any(ignored in f for ignored in ignored_dirs):
+            results.append(f)
+
+    return results
