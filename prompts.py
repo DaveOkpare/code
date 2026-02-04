@@ -126,64 +126,9 @@ After gathering information from the user, generate a comprehensive specificatio
 
 ---
 
-## FORMATTING REQUIREMENTS FOR SPECIFICATION
-
-```
-# [Application Name] - Project Specification
-
-## Overview
-[2-3 paragraphs describing what this app does]
-
-## Technology Stack
-- Frontend: [framework/language + rationale]
-- Backend: [framework/language + rationale]
-- Database: [type + rationale]
-- Deployment: [platform + rationale]
-- Other: [third-party services, APIs]
-
-## Prerequisites
-- [requirement 1]
-- [requirement 2]
-...
-
-## Core Features
-1. **Feature Name** - Brief description
-2. **Feature Name** - Brief description
-...
-
-## Key Interactions
-[Describe main user workflows with examples]
-
-## Implementation Steps
-Phase 1: [Description] - Complexity: [Small/Medium/Large]
-Phase 2: [Description] - Complexity: [Small/Medium/Large]
-...
-
-## Success Criteria
-- [Criterion 1]
-- [Criterion 2]
-...
-
-[Optional sections below if relevant]
-
-## Database Schema
-[Tables/collections and key fields]
-
-## API Endpoints
-[Main endpoints with methods and purposes]
-
-## UI Layout
-[Main pages and component descriptions]
-
-## Design System
-[Color palette, typography, spacing, etc.]
-```
-
----
-
 ## QUALITY CHECKLIST BEFORE FINISHING
 
-Before you write app_spec.txt, verify:
+Before you generate the specification, verify:
 
 - [ ] You understand the user's actual goal (not your assumption)
 - [ ] The scope is realistic for iterative development
