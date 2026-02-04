@@ -58,7 +58,7 @@ class PlanningResponse(BaseModel):
         description="The success criteria for the project. Do not include followup question when writing the success criteria."
     )
     extras: Extras = Field(
-        description="Optional information for the project. Do not include followup question when writing the miscellaneous information."
+        description="Optional information for the project. Do not include followup question when writing the additional information."
     )
 
 
@@ -78,10 +78,10 @@ def planning_response_to_markdown(plan: PlanningResponse) -> str:
     md += f"## Key Interactions\n{plan.key_interactions}\n\n"
     md += f"## Implementation Plan\n{plan.implementation_plan}\n\n"
     md += f"## Success Criteria\n{plan.success_criteria}\n\n"
-    md += f"## Database Schema\n{plan.misc.db_schema}\n\n"
-    md += f"## API Endpoints\n{plan.misc.api_endpoints}\n\n"
-    md += f"## UI Layout\n{plan.misc.ui_layout}\n\n"
-    md += f"## Design System\n{plan.misc.design_system}\n"
+    md += f"## Database Schema\n{plan.extras.db_schema}\n\n"
+    md += f"## API Endpoints\n{plan.extras.api_endpoints}\n\n"
+    md += f"## UI Layout\n{plan.extras.ui_layout}\n\n"
+    md += f"## Design System\n{plan.extras.design_system}\n"
     return md
 
 
@@ -126,10 +126,10 @@ if __name__ == "__main__":
         messages = []
 
         while True:
-            status, *response, new_message = await planning_step(
+            status, *response, new_messages = await planning_step(
                 user_prompt, messages, project_dir
             )
-            messages.extend(new_message)
+            messages.extend(new_messages)
 
             if status == "done":
                 print("\n✓ Planning complete!")

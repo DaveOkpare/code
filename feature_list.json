@@ -1,0 +1,528 @@
+[
+  {
+    "category": "functional",
+    "description": "Verify the basic lifecycle of the ToolCallingEnv including reset and step operations.",
+    "steps": [
+      "Step 1: Import the ToolCallingEnv class.",
+      "Step 2: Instantiate the environment with a mock scenario.",
+      "Step 3: Call env.reset() to get the initial observation and info.",
+      "Step 4: Assert that the observation is a dictionary.",
+      "Step 5: Assert that 'prompt' is present in the observation.",
+      "Step 6: Assert that 'tool_history' is an empty list.",
+      "Step 7: Define a valid tool call action for 'Search'.",
+      "Step 8: Execute env.step(action).",
+      "Step 9: Verify that the returned observation contains the result of the search.",
+      "Step 10: Verify that the reward is a float (specifically the step penalty).",
+      "Step 11: Verify that 'terminated' and 'truncated' are booleans.",
+      "Step 12: Define a 'Finish' action with the correct answer.",
+      "Step 13: Execute env.step(finish_action).",
+      "Step 14: Verify that 'terminated' is true.",
+      "Step 15: Verify that the final reward includes the success bonus."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the Mock Tool Registry correctly executes the Search tool and handles results.",
+    "steps": [
+      "Step 1: Initialize the ToolRegistry.",
+      "Step 2: Register a mock 'Search' tool with a predefined dataset.",
+      "Step 3: Call registry.execute('Search', {'query': 'Paris population'}).",
+      "Step 4: Verify the output matches the expected mock data.",
+      "Step 5: Call registry.execute('Search', {'query': 'Unknown place'}).",
+      "Step 6: Verify the output indicates no results found.",
+      "Step 7: Check registry logs to ensure the tool call was recorded.",
+      "Step 8: Configure the 'Search' tool with a 50% failure rate.",
+      "Step 9: Execute the tool multiple times.",
+      "Step 10: Verify that some calls return an error message.",
+      "Step 11: Configure the tool with a specific latency (e.g., 0.5s).",
+      "Step 12: Measure the execution time of a tool call.",
+      "Step 13: Verify execution time is at least 0.5s.",
+      "Step 14: Verify that tool parameters are validated using Pydantic."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the Calculator tool correctly performs mathematical operations.",
+    "steps": [
+      "Step 1: Initialize the ToolRegistry with a 'Calculator' tool.",
+      "Step 2: Execute Calculator with action 'add' and values 10, 5.",
+      "Step 3: Verify result is 15.",
+      "Step 4: Execute Calculator with action 'subtract' and values 10, 5.",
+      "Step 5: Verify result is 5.",
+      "Step 6: Execute Calculator with action 'multiply' and values 10, 5.",
+      "Step 7: Verify result is 50.",
+      "Step 8: Execute Calculator with action 'divide' and values 10, 2.",
+      "Step 9: Verify result is 5.",
+      "Step 10: Execute Calculator with action 'divide' and value 0.",
+      "Step 11: Verify an appropriate error message for division by zero is returned.",
+      "Step 12: Test with negative numbers.",
+      "Step 13: Test with floating point numbers.",
+      "Step 14: Verify that the calculator handles complex expressions if supported."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the TimeService tool provides accurate mock time and date information.",
+    "steps": [
+      "Step 1: Initialize the ToolRegistry with a 'TimeService' tool.",
+      "Step 2: Execute TimeService with action 'get_current_time'.",
+      "Step 3: Verify the output format is a valid ISO timestamp.",
+      "Step 4: Execute TimeService with action 'get_timezone' for 'Europe/Paris'.",
+      "Step 5: Verify the returned offset matches expectations.",
+      "Step 6: Mock the system time to a fixed value.",
+      "Step 7: Execute 'get_current_time' again.",
+      "Step 8: Verify the output matches the mocked fixed value.",
+      "Step 9: Test with an invalid timezone name.",
+      "Step 10: Verify the error message for invalid timezone.",
+      "Step 11: Execute 'get_days_between' with two dates.",
+      "Step 12: Verify the count is correct.",
+      "Step 13: Verify parameter types are checked (e.g., strings for dates)."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the KnowledgeBase tool retrieves information from a structured mock DB.",
+    "steps": [
+      "Step 1: Load a mock JSON database into the KnowledgeBase tool.",
+      "Step 2: Execute 'query' with a key that exists in the database.",
+      "Step 3: Verify the returned value matches the database content.",
+      "Step 4: Execute 'query' with a nested key path.",
+      "Step 5: Verify that the tool can traverse nested dictionaries.",
+      "Step 6: Execute 'query' with a non-existent key.",
+      "Step 7: Verify the output indicates 'Key not found'.",
+      "Step 8: Add a new entry to the mock database via tool action (if supported) or config.",
+      "Step 9: Query the newly added entry.",
+      "Step 10: Verify it returns the correct value.",
+      "Step 11: Execute 'list_categories' action.",
+      "Step 12: Verify the list of top-level keys is returned.",
+      "Step 13: Verify that large responses are truncated or handled according to configuration."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the Reward Engine penalizes step costs and redundant calls.",
+    "steps": [
+      "Step 1: Initialize the RewardEngine with a step penalty of -0.1.",
+      "Step 2: Perform a tool call via the environment.",
+      "Step 3: Verify the step reward is exactly -0.1.",
+      "Step 4: Perform the exact same tool call again (same parameters).",
+      "Step 5: Verify the reward is more negative (e.g., -0.5 for redundancy).",
+      "Step 6: Check the RewardEngine's internal state for redundant call tracking.",
+      "Step 7: Perform a different tool call.",
+      "Step 8: Verify the reward is back to -0.1.",
+      "Step 9: Call a tool with invalid syntax.",
+      "Step 10: Verify the penalty is severe (e.g., -1.0).",
+      "Step 11: Call a hallucinated tool name.",
+      "Step 12: Verify the penalty for hallucination is applied.",
+      "Step 13: Finish the episode with a correct answer.",
+      "Step 14: Verify the final reward is positive and large (e.g., +10.0).",
+      "Step 15: Reset the environment and verify reward accumulation starts from zero."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the Scenario Generator loads tasks from JSON files correctly.",
+    "steps": [
+      "Step 1: Create a test scenarios JSON file with 5 varied tasks.",
+      "Step 2: Initialize the ScenarioGenerator with the path to this file.",
+      "Step 3: Call generator.get_scenario(index=0).",
+      "Step 4: Verify the prompt, ground_truth, and required_tools match the file.",
+      "Step 5: Call generator.get_random_scenario().",
+      "Step 6: Verify the returned scenario is one of the 5 in the file.",
+      "Step 7: Verify that the generator tracks which scenarios have been used.",
+      "Step 8: Attempt to load an invalid JSON file.",
+      "Step 9: Verify a clear error message or exception is raised.",
+      "Step 10: Attempt to load a file with missing required fields (e.g., no ground_truth).",
+      "Step 11: Verify validation error is raised.",
+      "Step 12: Verify the generator can return the total count of scenarios.",
+      "Step 13: Test scenario shuffling functionality."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the LangChain Bridge correctly translates environment observations for the LLM.",
+    "steps": [
+      "Step 1: Initialize the LangChainBridge with a specific PromptTemplate.",
+      "Step 2: Pass an environment observation (prompt + history) to the bridge.",
+      "Step 3: Verify the formatted prompt contains the original task.",
+      "Step 4: Verify the formatted prompt includes the tool history in a readable format.",
+      "Step 5: Simulate the LLM outputting a tool call string.",
+      "Step 6: Use the bridge to parse the LLM output into a structured action.",
+      "Step 7: Verify the parsed action has the correct 'tool_name' and 'parameters'.",
+      "Step 8: Test parsing of malformed LLM output.",
+      "Step 9: Verify the bridge returns a 'ParsingError' action or similar.",
+      "Step 10: Test the bridge with different LLM output formats (e.g., XML vs JSON).",
+      "Step 11: Verify the formatting of tool results back to the LLM.",
+      "Step 12: Ensure that sensitive info in observations can be filtered by the bridge.",
+      "Step 13: Verify that the bridge maintains conversation state if needed."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the Dockerized Runtime environment can be built and run.",
+    "steps": [
+      "Step 1: Locate the Dockerfile in the project root.",
+      "Step 2: Run 'docker build -t tool-calling-env .' command.",
+      "Step 3: Verify the build completes successfully.",
+      "Step 4: Run 'docker run' to execute the default runner script.",
+      "Step 5: Verify the container starts and prints initialization logs.",
+      "Step 6: Check if all dependencies are installed in the container (gymnasium, langchain, etc.).",
+      "Step 7: Run docker-compose up to start the environment and mock services.",
+      "Step 8: Verify that the services are healthy.",
+      "Step 9: Run a test episode inside the container using 'docker exec'.",
+      "Step 10: Verify the test episode completes and outputs results to stdout.",
+      "Step 11: Verify that volume mounting works for scenario files.",
+      "Step 12: Verify that environment variables are correctly passed to the container.",
+      "Step 13: Clean up containers and images."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify Metrics Collection and Reporting after an episode.",
+    "steps": [
+      "Step 1: Run a complete episode until termination.",
+      "Step 2: Collect the 'info' dictionary from the final step.",
+      "Step 3: Verify 'total_reward' is present and accurate.",
+      "Step 4: Verify 'total_steps' matches the number of actions taken.",
+      "Step 5: Verify 'tool_usage_count' accurately counts each tool call.",
+      "Step 6: Verify 'success_status' is true if the ground truth was met.",
+      "Step 7: Run multiple episodes and aggregate metrics.",
+      "Step 8: Verify 'Average Reward' calculation.",
+      "Step 9: Verify 'Success Rate' calculation.",
+      "Step 10: Export metrics to a CSV or JSON file.",
+      "Step 11: Verify the exported file contains all expected columns.",
+      "Step 12: Check for 'Tool Efficiency' metric (reward per tool call).",
+      "Step 13: Verify that metrics are logged to the console in a structured format (JSON)."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify handling of malformed tool calls and parameter validation.",
+    "steps": [
+      "Step 1: Send a tool call action with a missing required parameter.",
+      "Step 2: Verify the environment returns an error observation instead of crashing.",
+      "Step 3: Verify a penalty is applied for the invalid call.",
+      "Step 4: Send a tool call action with a parameter of the wrong type (e.g., string instead of int).",
+      "Step 5: Verify the Pydantic validation catches the error.",
+      "Step 6: Verify the error message returned to the agent is descriptive.",
+      "Step 7: Send a tool call action that is not valid JSON.",
+      "Step 8: Verify the parser handles the exception gracefully.",
+      "Step 9: Send a tool call for a tool that exists but with an unknown action.",
+      "Step 10: Verify the tool's internal validation handles this.",
+      "Step 11: Repeat these tests 5 times to ensure stability.",
+      "Step 12: Check that the 'tool_history' records these failed attempts correctly.",
+      "Step 13: Verify that failed attempts still count towards the 'total_steps' limit."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify End-to-End scenario: Multi-step information retrieval and calculation.",
+    "steps": [
+      "Step 1: Set up a scenario: 'What is the square root of the population of Estonia?'.",
+      "Step 2: Agent calls 'Search' for 'population of Estonia'.",
+      "Step 3: Environment returns '1.3 million'.",
+      "Step 4: Agent calls 'Calculator' with 'sqrt(1300000)'.",
+      "Step 5: Environment returns '1140.17'.",
+      "Step 6: Agent calls 'Finish' with '1140.17'.",
+      "Step 7: Verify 'terminated' is true.",
+      "Step 8: Verify 'success_status' is true.",
+      "Step 9: Verify reward is high (bonus - step penalties).",
+      "Step 10: Check that exactly 3 steps were taken.",
+      "Step 11: Inspect the 'tool_history' in the final observation.",
+      "Step 12: Verify the order of tool calls in history is correct.",
+      "Step 13: Verify no redundant calls were made."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify Environment Truncation based on maximum steps.",
+    "steps": [
+      "Step 1: Initialize the environment with 'max_steps=3'.",
+      "Step 2: Perform step 1 (Search).",
+      "Step 3: Verify 'truncated' is false.",
+      "Step 4: Perform step 2 (Search).",
+      "Step 5: Verify 'truncated' is false.",
+      "Step 6: Perform step 3 (Search).",
+      "Step 7: Verify 'truncated' is true.",
+      "Step 8: Verify 'terminated' is false (since Finish wasn't called).",
+      "Step 9: Check that the final reward includes a 'failure' penalty or no bonus.",
+      "Step 10: Attempt to call step() again after truncation.",
+      "Step 11: Verify that a warning or error is raised, or it returns same state.",
+      "Step 12: Reset the environment and verify 'truncated' is false again.",
+      "Step 13: Verify max_steps can be configured per episode."
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Verify CLI output formatting and color-coded logging.",
+    "steps": [
+      "Step 1: Run the environment runner with 'verbose' flag enabled.",
+      "Step 2: Observe the console output for the start of the episode.",
+      "Step 3: Verify that the task prompt is displayed clearly.",
+      "Step 4: Verify that tool calls are highlighted (e.g., in cyan or bold).",
+      "Step 5: Verify that tool results are displayed in a distinct style (e.g., indented or different color).",
+      "Step 6: Verify that penalties are displayed in red.",
+      "Step 7: Verify that the final success message is in green.",
+      "Step 8: Check the alignment of the metrics table at the end.",
+      "Step 9: Verify that the logging level can be adjusted (INFO, DEBUG, ERROR).",
+      "Step 10: Run in 'quiet' mode and verify minimal output.",
+      "Step 11: Verify that JSON-formatted logs are available for machine reading.",
+      "Step 12: Ensure timestamps are present in all log lines.",
+      "Step 13: Verify that the progress bar (if any) works correctly during batch runs."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify the Scenario Generator can create dynamic tasks using templates.",
+    "steps": [
+      "Step 1: Define a task template: 'What is the {attribute} of {entity}?'.",
+      "Step 2: Provide a list of attributes and entities.",
+      "Step 3: Call generator.generate_dynamic_scenario().",
+      "Step 4: Verify the generated prompt matches the template structure.",
+      "Step 5: Verify that the ground truth is also generated or fetched correctly.",
+      "Step 6: Generate 10 random tasks.",
+      "Step 7: Verify that they are unique (mostly).",
+      "Step 8: Check that required tools are correctly inferred from the template.",
+      "Step 9: Test template with multiple variables.",
+      "Step 10: Verify handling of missing variables in the data source.",
+      "Step 11: Verify that dynamic scenarios can be mixed with static ones.",
+      "Step 12: Test seeding the random generator for reproducibility.",
+      "Step 13: Verify that the same seed produces the same sequence of tasks."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify Redundant Tool Call detection with slight parameter variations.",
+    "steps": [
+      "Step 1: Call 'Search' with query 'Paris population'.",
+      "Step 2: Call 'Search' with query 'paris population' (different casing).",
+      "Step 3: Verify the RewardEngine detects this as redundant.",
+      "Step 4: Verify a redundancy penalty is applied.",
+      "Step 5: Call 'Search' with query 'Population of Paris' (different phrasing).",
+      "Step 6: Verify if the system can detect semantic redundancy (if implemented).",
+      "Step 7: Call 'Calculator' with '1+2'.",
+      "Step 8: Call 'Calculator' with '2+1'.",
+      "Step 9: Verify if the system handles commutative operations as redundant.",
+      "Step 10: Check the 'info' dict for a 'redundancy_count' field.",
+      "Step 11: Verify that redundant calls still return valid results to the agent.",
+      "Step 12: Ensure the redundancy penalty is configurable.",
+      "Step 13: Verify that the first call is NOT penalized for redundancy."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify Environment Reset behavior and state isolation.",
+    "steps": [
+      "Step 1: Run an episode to completion.",
+      "Step 2: Record the final reward and tool history.",
+      "Step 3: Call env.reset().",
+      "Step 4: Verify that the cumulative reward is reset to 0.",
+      "Step 5: Verify that tool history is empty.",
+      "Step 6: Verify that the current task is a new one (if randomized).",
+      "Step 7: Verify that internal tool states (if any) are reset.",
+      "Step 8: Run a second episode.",
+      "Step 9: Verify that actions in the second episode do not affect the first episode's logs.",
+      "Step 10: Reset the environment multiple times in a row.",
+      "Step 11: Verify no memory leaks or accumulated state occurs.",
+      "Step 12: Verify that environment configuration (like max_steps) persists across resets.",
+      "Step 13: Verify that the 'seed' passed to reset() works for reproducibility."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify LangChain Agent integration as a policy.",
+    "steps": [
+      "Step 1: Initialize a LangChain agent with access to the Mock Tools.",
+      "Step 2: Create an RL loop: obs = env.reset(), then agent.run(obs).",
+      "Step 3: Provide the agent with the 'prompt' from the observation.",
+      "Step 4: Capture the agent's tool call.",
+      "Step 5: Map the LangChain tool call to the environment action space.",
+      "Step 6: Execute env.step() with the agent's action.",
+      "Step 7: Feed the tool result back into the agent's memory.",
+      "Step 8: Repeat until the agent calls 'Finish' or max steps reached.",
+      "Step 9: Verify the agent successfully completes a simple task.",
+      "Step 10: Verify the agent handles 'observation' format correctly.",
+      "Step 11: Verify the agent can recover from a tool error returned by the env.",
+      "Step 12: Test with a local LLM via Ollama if possible, else mock the LLM response.",
+      "Step 13: Verify the total reward for an agent-led episode."
+    ],
+    "passes": false
+  },
+  {
+    "category": "style",
+    "description": "Verify the Streamlit Dashboard for visualizing training progress.",
+    "steps": [
+      "Step 1: Start the Streamlit app.",
+      "Step 2: Verify the dashboard loads in the browser.",
+      "Step 3: Check for the 'Overall Metrics' section (Success Rate, Avg Reward).",
+      "Step 4: Verify that the 'Episode Trajectory' view is available.",
+      "Step 5: Select a specific episode from a dropdown.",
+      "Step 6: Verify that the sequence of tool calls and rewards is displayed.",
+      "Step 7: Verify that charts (e.g., Reward over Time) are rendering.",
+      "Step 8: Upload a metrics JSON file to the dashboard.",
+      "Step 9: Verify the dashboard updates with the new data.",
+      "Step 10: Toggle between different metric views (Tool Usage vs Success).",
+      "Step 11: Verify that the dashboard is responsive.",
+      "Step 12: Check for any Javascript errors in the browser console.",
+      "Step 13: Verify that the 'About' section explains the metrics correctly."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify Pydantic-based configuration for the Environment.",
+    "steps": [
+      "Step 1: Define a configuration dictionary for the environment.",
+      "Step 2: Pass the dictionary to an 'EnvConfig' Pydantic model.",
+      "Step 3: Verify that default values are applied for missing keys.",
+      "Step 4: Verify that type coercion works (e.g., '5' string to 5 int).",
+      "Step 5: Pass an invalid value (e.g., negative step penalty) and check for validation error.",
+      "Step 6: Verify that nested configurations (e.g., tool-specific settings) are validated.",
+      "Step 7: Initialize the environment using the validated config object.",
+      "Step 8: Verify the environment's behavior matches the config (e.g., penalty values).",
+      "Step 9: Export the current config to a JSON file.",
+      "Step 10: Verify the exported JSON is valid and matches the input.",
+      "Step 11: Test 'extra=forbid' to ensure no unexpected config keys are passed.",
+      "Step 12: Verify that documentation/docstrings are present for config fields.",
+      "Step 13: Verify that the config model can be used to generate a JSON schema."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify complex multi-tool dependency handling.",
+    "steps": [
+      "Step 1: Scenario: 'Find the current time in Tokyo and calculate how many hours until 9 PM'.",
+      "Step 2: Call 'TimeService' to get 'current_time' in 'Asia/Tokyo'.",
+      "Step 3: Environment returns '2023-10-27T14:00:00+09:00'.",
+      "Step 4: Agent calls 'Calculator' to subtract 14 from 21.",
+      "Step 5: Environment returns '7'.",
+      "Step 6: Agent calls 'Finish' with '7 hours'.",
+      "Step 7: Verify success status.",
+      "Step 8: Check if the agent tried to call Search first (unnecessary).",
+      "Step 9: Verify reward reflects the efficiency of directly using TimeService.",
+      "Step 10: Check if the agent correctly parsed the ISO timestamp from the tool result.",
+      "Step 11: Verify that the tool history reflects the correct sequence.",
+      "Step 12: Repeat with a similar task for a different city.",
+      "Step 13: Verify consistency in reward application."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify handling of tool execution timeouts/latency.",
+    "steps": [
+      "Step 1: Configure a tool with a 'timeout' of 1.0s and 'latency' of 2.0s.",
+      "Step 2: Call the tool via the environment.",
+      "Step 3: Verify that the environment returns a 'TimeoutError' after 1.0s.",
+      "Step 4: Verify that the reward engine applies a penalty for the timeout.",
+      "Step 5: Verify that the agent can see the 'Timeout' in the observation.",
+      "Step 6: Configure the tool with 'latency' of 0.5s and 'timeout' of 1.0s.",
+      "Step 7: Call the tool.",
+      "Step 8: Verify it succeeds and takes ~0.5s.",
+      "Step 9: Verify no timeout error is returned.",
+      "Step 10: Check that the total episode time includes these latencies.",
+      "Step 11: Verify that the environment can run tool executions in parallel (if supported).",
+      "Step 12: Test the 'timeout' behavior with multiple concurrent tool calls.",
+      "Step 13: Verify that the environment remains responsive during long tool calls."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify KnowledgeBase 'search' vs 'get' operations.",
+    "steps": [
+      "Step 1: Initialize KnowledgeBase with several documents.",
+      "Step 2: Call 'search' with a keyword present in multiple documents.",
+      "Step 3: Verify a list of document IDs or summaries is returned.",
+      "Step 4: Call 'get' with a specific document ID.",
+      "Step 5: Verify the full content of the document is returned.",
+      "Step 6: Call 'get' with an invalid ID.",
+      "Step 7: Verify appropriate error message.",
+      "Step 8: Call 'search' with a keyword that matches nothing.",
+      "Step 9: Verify empty list is returned.",
+      "Step 10: Check that 'search' results are ranked by relevance (if implemented).",
+      "Step 11: Verify that 'get' is more efficient (lower cost) than 'search' if configured.",
+      "Step 12: Verify that the agent can use search results to perform a get.",
+      "Step 13: Check tool logs for distinct 'search' and 'get' actions."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify environment behavior with very long tool results.",
+    "steps": [
+      "Step 1: Configure a tool to return a very large string (e.g., 10k tokens).",
+      "Step 2: Call the tool.",
+      "Step 3: Verify the environment truncates the result according to 'max_obs_length' config.",
+      "Step 4: Verify that a 'truncated' indicator is added to the result string.",
+      "Step 5: Check that the reward is not negatively affected by result length (unless configured).",
+      "Step 6: Verify that the LLM/Agent still receives a valid (though partial) observation.",
+      "Step 7: Configure 'max_obs_length' to be very small (e.g., 100 characters).",
+      "Step 8: Call the tool again.",
+      "Step 9: Verify aggressive truncation.",
+      "Step 10: Check if the agent can request the 'next page' of the result if supported.",
+      "Step 11: Verify the pagination logic of the tool/environment.",
+      "Step 12: Ensure that the full result is still logged in the background for debugging.",
+      "Step 13: Verify that truncation doesn't break the JSON structure of the observation."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify 'Finish' action validation and ground truth comparison.",
+    "steps": [
+      "Step 1: Provide a Finish action with an answer that is 'close enough' to ground truth.",
+      "Step 2: Verify it is marked as a success (if fuzzy matching is enabled).",
+      "Step 3: Provide a Finish action with a completely wrong answer.",
+      "Step 4: Verify it is marked as a failure.",
+      "Step 5: Provide a Finish action with the exact correct answer.",
+      "Step 6: Verify it is marked as a success.",
+      "Step 7: Test with numerical answers (e.g., 10.0 vs 10).",
+      "Step 8: Verify that '10.00001' is handled based on a defined tolerance (epsilon).",
+      "Step 9: Test with string answers (case sensitivity check).",
+      "Step 10: Verify if the 'Finish' action requires a mandatory 'reasoning' field.",
+      "Step 11: Call Finish without an answer field.",
+      "Step 12: Verify it is treated as an invalid action.",
+      "Step 13: Verify that the reward for success is only granted upon calling Finish."
+    ],
+    "passes": false
+  },
+  {
+    "category": "functional",
+    "description": "Verify parallel execution of multiple environment instances.",
+    "steps": [
+      "Step 1: Create 5 instances of ToolCallingEnv with different seeds.",
+      "Step 2: Run one step in each environment sequentially.",
+      "Step 3: Verify each environment has its own independent state and task.",
+      "Step 4: Use a Python ThreadPoolExecutor to run steps in parallel.",
+      "Step 5: Verify that there are no race conditions or shared state issues.",
+      "Step 6: Check the total time taken for parallel vs sequential execution.",
+      "Step 7: Verify that the ToolRegistry is thread-safe.",
+      "Step 8: Perform a large number of steps across all instances.",
+      "Step 9: Verify the aggregate metrics are correct.",
+      "Step 10: Verify that logging from different instances is properly interleaved or separated.",
+      "Step 11: Close all environments.",
+      "Step 12: Verify resources are cleaned up.",
+      "Step 13: Run in a multiprocessing environment (e.g., Stable Baselines 3 SubprocVecEnv)."
+    ],
+    "passes": false
+  }
+]
